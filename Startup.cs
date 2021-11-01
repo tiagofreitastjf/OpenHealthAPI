@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OpenHealthAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,10 @@ namespace OpenHealthAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OpenHealthAPI", Version = "v1" });
             });
+            services.AddControllers().AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+            services.AddDbContext<OpenHealthContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
