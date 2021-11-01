@@ -116,9 +116,9 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-                var cliente = _context.Clientes.FirstOrDefault(p => p.Cpf == dto.CPF && p.Senha == dto.Senha);
-                if (cliente == null) return NotFound();
-                return Ok();
+                var cliente = _context.Clientes.FirstOrDefault(p => p.Email == dto.Email && p.Senha == dto.Senha);
+                if (cliente == null) return Ok(new { UserNotFound = true });
+                return Ok(cliente);
             }
             catch (Exception ex)
             {
