@@ -7,6 +7,13 @@ namespace OpenHealthAPI.Models
 {
     public partial class Cliente
     {
+        public Cliente()
+        {
+            ClienteAutorizaClinicas = new HashSet<ClienteAutorizaClinica>();
+            ClinicaSolicitaAutorizacaos = new HashSet<ClinicaSolicitaAutorizacao>();
+            Exames = new HashSet<Exame>();
+        }
+
         public int Id { get; set; }
         public string Nome { get; set; }
         public DateTime DataNascimento { get; set; }
@@ -20,5 +27,9 @@ namespace OpenHealthAPI.Models
         public string Complemento { get; set; }
         public string Cidade { get; set; }
         public string Estado { get; set; }
+
+        public virtual ICollection<ClienteAutorizaClinica> ClienteAutorizaClinicas { get; set; }
+        public virtual ICollection<ClinicaSolicitaAutorizacao> ClinicaSolicitaAutorizacaos { get; set; }
+        public virtual ICollection<Exame> Exames { get; set; }
     }
 }

@@ -18,7 +18,10 @@ namespace OpenHealthAPI.Models
         }
 
         public virtual DbSet<Cliente> Clientes { get; set; }
+        public virtual DbSet<ClienteAutorizaClinica> ClienteAutorizaClinicas { get; set; }
         public virtual DbSet<Clinica> Clinicas { get; set; }
+        public virtual DbSet<ClinicaSolicitaAutorizacao> ClinicaSolicitaAutorizacaos { get; set; }
+        public virtual DbSet<Exame> Exames { get; set; }
         public virtual DbSet<Profissional> Profissionals { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -94,6 +97,31 @@ namespace OpenHealthAPI.Models
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<ClienteAutorizaClinica>(entity =>
+            {
+                entity.ToTable("ClienteAutorizaClinica");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+
+                entity.Property(e => e.IdCliente).HasColumnName("idCliente");
+
+                entity.Property(e => e.IdClinica).HasColumnName("idClinica");
+
+                entity.HasOne(d => d.IdClienteNavigation)
+                    .WithMany(p => p.ClienteAutorizaClinicas)
+                    .HasForeignKey(d => d.IdCliente)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ClienteAutorizaClinica_Cliente");
+
+                entity.HasOne(d => d.IdClinicaNavigation)
+                    .WithMany(p => p.ClienteAutorizaClinicas)
+                    .HasForeignKey(d => d.IdClinica)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ClienteAutorizaClinica_Clinica");
+            });
+
             modelBuilder.Entity<Clinica>(entity =>
             {
                 entity.ToTable("Clinica");
@@ -134,6 +162,72 @@ namespace OpenHealthAPI.Models
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ClinicaSolicitaAutorizacao>(entity =>
+            {
+                entity.ToTable("ClinicaSolicitaAutorizacao");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Descricao)
+                    .IsRequired()
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdCliente).HasColumnName("idCliente");
+
+                entity.Property(e => e.IdClinica).HasColumnName("idClinica");
+
+                entity.Property(e => e.Token)
+                    .IsRequired()
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.IdClienteNavigation)
+                    .WithMany(p => p.ClinicaSolicitaAutorizacaos)
+                    .HasForeignKey(d => d.IdCliente)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ClinicaSolicitaAutorizacao_Cliente");
+
+                entity.HasOne(d => d.IdClinicaNavigation)
+                    .WithMany(p => p.ClinicaSolicitaAutorizacaos)
+                    .HasForeignKey(d => d.IdClinica)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ClinicaSolicitaAutorizacao_Clinica");
+            });
+
+            modelBuilder.Entity<Exame>(entity =>
+            {
+                entity.ToTable("Exame");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ArquivoBase64)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Data).HasColumnType("datetime");
+
+                entity.Property(e => e.IdCliente).HasColumnName("idCliente");
+
+                entity.Property(e => e.IdClinica).HasColumnName("idClinica");
+
+                entity.Property(e => e.Observacao)
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.IdClienteNavigation)
+                    .WithMany(p => p.Exames)
+                    .HasForeignKey(d => d.IdCliente)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Exame_Cliente");
+
+                entity.HasOne(d => d.IdClinicaNavigation)
+                    .WithMany(p => p.Exames)
+                    .HasForeignKey(d => d.IdClinica)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Exame_Clinica");
             });
 
             modelBuilder.Entity<Profissional>(entity =>
