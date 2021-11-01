@@ -79,6 +79,9 @@ namespace OpenHealthAPI.Controllers
                     // salvar a senha quando estiver criando um novo cliente, após isso alteração apenas por outro método
                     if (string.IsNullOrWhiteSpace(dto.Senha)) throw new Exception("Campo Senha inválido.");
                     cliente.Senha = dto.Senha;
+                    // gerar token de 8 caracteres
+                    var caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    cliente.Token = new string(Enumerable.Repeat(caracteres, 8).Select(s => s[(new Random()).Next(s.Length)]).ToArray());
                 }
 
                 cliente.Nome = dto.Nome;
@@ -93,6 +96,7 @@ namespace OpenHealthAPI.Controllers
                 cliente.Complemento = dto.Complemento;
                 cliente.Cidade = dto.Cidade;
                 cliente.Estado = dto.Estado;
+               
 
                 if (!dto.Id.HasValue) _context.Clientes.Add(cliente);
 
@@ -119,6 +123,47 @@ namespace OpenHealthAPI.Controllers
                 var cliente = _context.Clientes.FirstOrDefault(p => p.Email == dto.Email && p.Senha == dto.Senha);
                 if (cliente == null) return Ok(new { UserNotFound = true });
                 return Ok(cliente);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        /// <summary>
+        /// Responder uma solicitação de acesso
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        [HttpPost("ResponderSolicitacao")]
+        public IActionResult PostClienteResponderSolicitacao([FromBody] ClienteResponderSolicitacaoDto dto)
+        {
+            try
+            {
+
+
+                var solicitacao = _context.ClinicaSolicitaAutorizacaos.Find(dto.IdSolicitacao.Value);
+                if (solicitacao == null) throw new Exception("Solicitação inválida.");
+                if (solicitacao.Pendente == false) throw new Exception("Está solicitação já foi respondida.");
+
+                var jaTemAutorizacao = _context.ClienteAutorizaClinicas.FirstOrDefault(p => p.IdCliente == solicitacao.IdCliente && p.IdClinica == solicitacao.IdClinica && p.Autorizado == true);
+                if (jaTemAutorizacao != null) throw new Exception("Clinica já autorizada.");
+
+                var cliente = _context.Clientes.FirstOrDefault(p => p.Id == solicitacao.IdCliente);
+                if (cliente == null) throw new Exception("Cliente inválido.");
+
+                if (cliente.Token != dto.Token) throw new Exception("Token inválido.");
+
+                solicitacao.Pendente = false;
+                _context.ClienteAutorizaClinicas.Add(new ClienteAutorizaClinica
+                {
+                    IdCliente = cliente.Id,
+                    IdClinica = solicitacao.IdClinica,
+                    Autorizado = dto.Autorizado.Value
+                });
+
+                _context.SaveChanges();
+                return Ok();
             }
             catch (Exception ex)
             {

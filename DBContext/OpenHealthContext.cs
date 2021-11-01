@@ -95,6 +95,11 @@ namespace OpenHealthAPI.Models
                     .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Token)
+                    .IsRequired()
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<ClienteAutorizaClinica>(entity =>

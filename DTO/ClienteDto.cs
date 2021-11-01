@@ -44,4 +44,16 @@ namespace OpenHealthAPI.DTO
         public string Senha { get; set; }
     }
 
+
+    public class ClienteResponderSolicitacaoDto
+    {
+        [Required]
+        public int? IdSolicitacao { get; set; }
+        [Required]
+        public bool? Autorizado { get; set; }
+
+        [Required]
+        public string Token { get; set; }
+    }
+
 }

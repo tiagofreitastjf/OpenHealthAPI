@@ -96,7 +96,11 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Solicitar autororização ao paciente
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("SolicitarAutorizacao")]
         public IActionResult PostSolicitarAutorizacao([FromBody] ClinicaSolicaAutorizacaoDto dto)
         {
