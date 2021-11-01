@@ -97,7 +97,6 @@ namespace OpenHealthAPI.Controllers
         /// </summary>
         /// <param name="idCliente"></param>
         /// <param name="idClinica"></param>
-        /// <param name="incluirOutrasClinicas"></param>
         /// <returns></returns>
         [HttpGet()]
         public IActionResult GetTodos([FromQuery, Required] int? idCliente, [FromQuery, Required] int? idClinica)

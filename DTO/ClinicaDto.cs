@@ -36,4 +36,15 @@ namespace OpenHealthAPI.DTO
         public string Estado { get; set; }
     }
 
+
+    public class ClinicaSolicaAutorizacaoDto
+    {
+        [Required]
+        public int? IdClinica { get; set; }
+        [Required]
+        public int? IdCliente { get; set; }
+        [Required]
+        public string Descricao { get; set; }
+    }
+
 }

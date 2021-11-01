@@ -95,5 +95,35 @@ namespace OpenHealthAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+
+        [HttpPost("SolicitarAutorizacao")]
+        public IActionResult PostSolicitarAutorizacao([FromBody] ClinicaSolicaAutorizacaoDto dto)
+        {
+            try
+            {
+                var autorizacao = _context.ClienteAutorizaClinicas.FirstOrDefault(p => p.IdCliente == dto.IdCliente && p.IdClinica == dto.IdClinica);
+                // caso já tiver sido autorizado em algum momento
+                if (autorizacao != null && autorizacao.Autorizado == true) return Ok();
+
+                var solicitacao = _context.ClinicaSolicitaAutorizacaos.FirstOrDefault(p => p.IdCliente == dto.IdCliente && p.IdClinica == dto.IdClinica && p.Pendente == true);
+                if (solicitacao != null) throw new Exception("Já existe um pedido de autorização pendente.");
+
+                solicitacao = new ClinicaSolicitaAutorizacao();
+                solicitacao.IdCliente = dto.IdCliente.Value;
+                solicitacao.IdClinica = dto.IdClinica.Value;
+                solicitacao.Descricao = dto.Descricao;
+                solicitacao.Pendente = true;
+
+                _context.ClinicaSolicitaAutorizacaos.Add(solicitacao);
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace OpenHealthAPI.Models
         public int IdClinica { get; set; }
         public string Descricao { get; set; }
         public string Token { get; set; }
+        public bool Pendente { get; set; }
 
         public virtual Cliente IdClienteNavigation { get; set; }
         public virtual Clinica IdClinicaNavigation { get; set; }
