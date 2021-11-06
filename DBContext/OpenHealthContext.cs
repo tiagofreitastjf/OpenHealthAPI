@@ -43,6 +43,8 @@ namespace OpenHealthAPI.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.IdClinica).HasColumnName("idClinica");
+
                 entity.Property(e => e.Bairro)
                     .IsRequired()
                     .HasMaxLength(100)

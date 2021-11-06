@@ -33,6 +33,8 @@ namespace OpenHealthAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OpenHealthAPI", Version = "v1" });
             });
+
+            services.AddCors();
             services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
 );
@@ -48,6 +50,13 @@ namespace OpenHealthAPI
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OpenHealthAPI v1"));
             }
+
+            app.UseCors(p =>
+            {
+                p.AllowAnyOrigin();
+                p.AllowAnyMethod();
+                p.AllowAnyHeader();
+            });
 
             app.UseHttpsRedirection();
 

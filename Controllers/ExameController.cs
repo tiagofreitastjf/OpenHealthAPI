@@ -75,9 +75,9 @@ namespace OpenHealthAPI.Controllers
                     exame.IdClinica = dto.IdClinica.Value;
                 }
 
-                exame.Data = exame.Data;
-                exame.Observacao = exame.Observacao;
-                exame.ArquivoBase64 = exame.ArquivoBase64;
+                exame.Data = dto.Data.Value;
+                exame.Observacao = dto.Observacao;
+                exame.ArquivoBase64 = dto.ArquivoBase64;
 
                 if (!dto.Id.HasValue) _context.Exames.Add(exame);
 

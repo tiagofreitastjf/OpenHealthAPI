@@ -4,6 +4,7 @@ using OpenHealthAPI.DTO;
 using OpenHealthAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -170,5 +171,20 @@ namespace OpenHealthAPI.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpGet("Pesquisar")]
+        public IActionResult GetClientesPorNome([FromQuery, Required] string nome, [FromQuery, Required] int? idClinica)
+        {
+            try
+            {
+                var clientes = _context.Clientes.Where(p => p.Nome.Contains(nome) && p.IdClinica == idClinica);
+                return Ok(clientes);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+        
     }
 }
