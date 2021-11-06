@@ -18,5 +18,7 @@ namespace OpenHealthAPI.DTO
         public string Observacao { get; set; }
         [Required]
         public string ArquivoBase64 { get; set; }
+        [Required]
+        public string NomeArquivo { get; set; }
     }
 }

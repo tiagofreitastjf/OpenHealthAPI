@@ -44,6 +44,7 @@ namespace OpenHealthAPI.Controllers
                     Data = exame.Data,
                     Observacao = exame.Observacao,
                     ArquivoBase64 = exame.ArquivoBase64,
+                    NomeArquivo = exame.NomeArquivo,
                 };
 
                 return Ok(exame);
@@ -78,6 +79,7 @@ namespace OpenHealthAPI.Controllers
                 exame.Data = dto.Data.Value;
                 exame.Observacao = dto.Observacao;
                 exame.ArquivoBase64 = dto.ArquivoBase64;
+                exame.NomeArquivo = dto.NomeArquivo;
 
                 if (!dto.Id.HasValue) _context.Exames.Add(exame);
 
@@ -93,12 +95,12 @@ namespace OpenHealthAPI.Controllers
 
 
         /// <summary>
-        /// Pegar todos exames do cliente
+        /// Pegar todos exames do cliente compartilhados com a clinica
         /// </summary>
         /// <param name="idCliente"></param>
         /// <param name="idClinica"></param>
         /// <returns></returns>
-        [HttpGet()]
+        [HttpGet("Clinica")]
         public IActionResult GetTodos([FromQuery, Required] int? idCliente, [FromQuery, Required] int? idClinica)
         {
             try
@@ -106,7 +108,9 @@ namespace OpenHealthAPI.Controllers
 
                 // verificar se a clinica é autorizada.
                var clienteAutorizaClinica = _context.ClienteAutorizaClinicas.FirstOrDefault(p => p.IdCliente == idCliente && p.IdClinica == idClinica);
-                if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) throw new Exception("Acesso não autorizado.");
+                if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new {
+                    Mensagem = "Clinica não autorizada."
+                });
 
 
                 List<Exame> exames = _context.Exames.Where(p => p.IdCliente == idCliente).ToList();
@@ -121,7 +125,45 @@ namespace OpenHealthAPI.Controllers
                         ArquivoBase64 = exame.ArquivoBase64,
                         IdCliente = exame.IdCliente,
                         IdClinica = exame.IdClinica,
-                        Observacao = exame.Observacao
+                        Observacao = exame.Observacao,
+                        NomeArquivo = exame.NomeArquivo
+                    });
+                }
+
+                return Ok(examesDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Pegar todos exames do cliente
+        /// </summary>
+        /// <param name="idCliente"></param>
+        /// <param name="idClinica"></param>
+        /// <returns></returns>
+        [HttpGet("Cliente")]
+        public IActionResult GetTodos([FromQuery, Required] int? idCliente)
+        {
+            try
+            {
+                List<Exame> exames = _context.Exames.Where(p => p.IdCliente == idCliente).ToList();
+                var examesDto = new List<ExameDto>();
+
+                foreach (var exame in exames)
+                {
+                    examesDto.Add(new ExameDto
+                    {
+                        Id = exame.Id,
+                        Data = exame.Data,
+                        ArquivoBase64 = exame.ArquivoBase64,
+                        IdCliente = exame.IdCliente,
+                        IdClinica = exame.IdClinica,
+                        Observacao = exame.Observacao,
+                        NomeArquivo = exame.NomeArquivo
                     });
                 }
 

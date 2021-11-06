@@ -13,6 +13,7 @@ namespace OpenHealthAPI.Models
         public DateTime Data { get; set; }
         public string Observacao { get; set; }
         public string ArquivoBase64 { get; set; }
+        public string NomeArquivo { get; set; }
 
         public virtual Cliente IdClienteNavigation { get; set; }
         public virtual Clinica IdClinicaNavigation { get; set; }
