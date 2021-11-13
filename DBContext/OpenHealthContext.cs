@@ -22,7 +22,7 @@ namespace OpenHealthAPI.Models
         public virtual DbSet<Clinica> Clinicas { get; set; }
         public virtual DbSet<ClinicaSolicitaAutorizacao> ClinicaSolicitaAutorizacaos { get; set; }
         public virtual DbSet<Exame> Exames { get; set; }
-        public virtual DbSet<Profissional> Profissionals { get; set; }
+        public virtual DbSet<Profissional> Profissional { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -303,6 +303,36 @@ namespace OpenHealthAPI.Models
                     .HasForeignKey(d => d.IdClinica)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Profissional_Clinica");
+            });
+
+            modelBuilder.Entity<Consulta>(entity =>
+            {
+                entity.HasOne(d => d.Clinica)
+                    .WithMany(p => p.Consulta)
+                    .HasForeignKey(d => d.idClinica);
+
+                entity.HasOne(d => d.Cliente)
+                    .WithMany(p => p.Consulta)
+                    .HasForeignKey(d => d.idCliente);
+
+                entity.HasOne(d => d.Profissional)
+                    .WithMany(p => p.Consulta)
+                    .HasForeignKey(d => d.idProfissional);
+            });
+
+            modelBuilder.Entity<Vacina>(entity =>
+            {
+                entity.HasOne(d => d.Clinica)
+                   .WithMany(p => p.Vacina)
+                   .HasForeignKey(d => d.idClinica);
+
+                entity.HasOne(d => d.Cliente)
+                    .WithMany(p => p.Vacina)
+                    .HasForeignKey(d => d.idCliente);
+
+                entity.HasOne(d => d.Profissional)
+                    .WithMany(p => p.Vacina)
+                    .HasForeignKey(d => d.idProfissional);
             });
 
             OnModelCreatingPartial(modelBuilder);

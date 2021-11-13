@@ -32,7 +32,7 @@ namespace OpenHealthAPI.Controllers
             try
             {
                 if (!id.HasValue) throw new Exception("Id inválido");
-                var profissional = this._context.Profissionals.Find(id.Value);
+                var profissional = this._context.Profissional.Find(id.Value);
                 if (profissional == null) return NotFound();
 
                 var dto = new ProfissionalDto()
@@ -72,7 +72,7 @@ namespace OpenHealthAPI.Controllers
             {
                 Profissional profissional;
 
-                if (dto.Id.HasValue) profissional = _context.Profissionals.Find(dto.Id.Value);
+                if (dto.Id.HasValue) profissional = _context.Profissional.Find(dto.Id.Value);
                 else
                 {
                     profissional = new Profissional();
@@ -97,7 +97,7 @@ namespace OpenHealthAPI.Controllers
                 profissional.Cidade = dto.Cidade;
                 profissional.Estado = dto.Estado;
 
-                if (!dto.Id.HasValue) _context.Profissionals.Add(profissional);
+                if (!dto.Id.HasValue) _context.Profissional.Add(profissional);
 
                 _context.SaveChanges();
 
@@ -119,7 +119,7 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-                var profissional = _context.Profissionals.FirstOrDefault(p => p.Email == dto.Email && p.Senha == dto.Senha);
+                var profissional = _context.Profissional.FirstOrDefault(p => p.Email == dto.Email && p.Senha == dto.Senha);
                 if (profissional == null) return Ok(new { UserNotFound = true });
                 return Ok(profissional);
             }
