@@ -24,7 +24,7 @@ namespace OpenHealthAPI.Controllers
             {
                 Cliente cliente = _context.Clientes
                     .Include(p => p.Consulta)
-                    .Include(p => p.Vacina)
+                    .Include(p => p.Vacinas)
                     .FirstOrDefault(p => p.Id == idCliente);
 
                 if (cliente == null)
@@ -42,7 +42,7 @@ namespace OpenHealthAPI.Controllers
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Descricao
                     }),
-                    vacina = cliente.Vacina.Select(p => new {
+                    vacina = cliente.Vacinas.Select(p => new {
                         p.TipoVacina,
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Observacao
@@ -60,9 +60,9 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-                Profissional profissional = _context.Profissional
+                Profissional profissional = _context.Profissionals
                     .Include(p => p.Consulta)
-                    .Include(p => p.Vacina)
+                    .Include(p => p.Vacinas)
                     .FirstOrDefault(p => p.Id == idProfissional);
 
                 if (profissional == null)
@@ -80,7 +80,7 @@ namespace OpenHealthAPI.Controllers
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Descricao
                     }),
-                    vacina = profissional.Vacina.Select(p => new {
+                    vacina = profissional.Vacinas.Select(p => new {
                         p.TipoVacina,
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Observacao
