@@ -7,6 +7,12 @@ namespace OpenHealthAPI.Models
 {
     public partial class Profissional
     {
+        public Profissional()
+        {
+            Consulta = new HashSet<Consulta>();
+            Vacinas = new HashSet<Vacina>();
+        }
+
         public int Id { get; set; }
         public int IdClinica { get; set; }
         public string Nome { get; set; }
@@ -23,5 +29,7 @@ namespace OpenHealthAPI.Models
         public string Estado { get; set; }
 
         public virtual Clinica IdClinicaNavigation { get; set; }
+        public virtual ICollection<Consulta> Consulta { get; set; }
+        public virtual ICollection<Vacina> Vacinas { get; set; }
     }
 }

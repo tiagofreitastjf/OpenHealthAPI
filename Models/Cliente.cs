@@ -11,7 +11,9 @@ namespace OpenHealthAPI.Models
         {
             ClienteAutorizaClinicas = new HashSet<ClienteAutorizaClinica>();
             ClinicaSolicitaAutorizacaos = new HashSet<ClinicaSolicitaAutorizacao>();
+            Consulta = new HashSet<Consulta>();
             Exames = new HashSet<Exame>();
+            Vacinas = new HashSet<Vacina>();
         }
 
         public int Id { get; set; }
@@ -30,8 +32,11 @@ namespace OpenHealthAPI.Models
         public string Estado { get; set; }
         public string Token { get; set; }
 
+        public virtual Clinica IdClinicaNavigation { get; set; }
         public virtual ICollection<ClienteAutorizaClinica> ClienteAutorizaClinicas { get; set; }
         public virtual ICollection<ClinicaSolicitaAutorizacao> ClinicaSolicitaAutorizacaos { get; set; }
+        public virtual ICollection<Consulta> Consulta { get; set; }
         public virtual ICollection<Exame> Exames { get; set; }
+        public virtual ICollection<Vacina> Vacinas { get; set; }
     }
 }
