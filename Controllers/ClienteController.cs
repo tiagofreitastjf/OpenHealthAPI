@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenHealthAPI.DTO;
 using OpenHealthAPI.Models;
+using OpenHealthAPI.Servicos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,10 +17,12 @@ namespace OpenHealthAPI.Controllers
     public class ClienteController : ControllerBase
     {
         private readonly OpenHealthContext _context;
+        private readonly IEmailServico emailServico;
 
-        public ClienteController(OpenHealthContext context)
+        public ClienteController(OpenHealthContext context, IEmailServico emailServico)
         {
             this._context = context;
+            this.emailServico = emailServico;
         }
 
         /// <summary>
@@ -71,6 +74,12 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
+                Cliente jaExite = _context.Clientes.FirstOrDefault(p => p.Email == dto.Email);
+                if (jaExite != null)
+                {
+                    return BadRequest("Email já cadastrado.");
+                }
+
                 Cliente cliente;
 
                 if (dto.Id.HasValue) cliente = _context.Clientes.Find(dto.Id.Value);
@@ -141,25 +150,23 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-
-
-                var solicitacao = _context.ClinicaSolicitaAutorizacaos.Find(dto.IdSolicitacao.Value);
+                var solicitacao = _context.Autorizacao.Find(dto.IdSolicitacao.Value);
                 if (solicitacao == null) throw new Exception("Solicitação inválida.");
                 if (solicitacao.Pendente == false) throw new Exception("Está solicitação já foi respondida.");
 
-                var jaTemAutorizacao = _context.ClienteAutorizaClinicas.FirstOrDefault(p => p.IdCliente == solicitacao.IdCliente && p.IdClinica == solicitacao.IdClinica && p.Autorizado == true);
+                var jaTemAutorizacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == solicitacao.idCliente && p.idClinica == solicitacao.idClinica && p.Autorizado == true);
                 if (jaTemAutorizacao != null) throw new Exception("Clinica já autorizada.");
 
-                var cliente = _context.Clientes.FirstOrDefault(p => p.Id == solicitacao.IdCliente);
+                var cliente = _context.Clientes.FirstOrDefault(p => p.Id == solicitacao.idCliente);
                 if (cliente == null) throw new Exception("Cliente inválido.");
 
                 if (cliente.Token != dto.Token) throw new Exception("Token inválido.");
 
                 solicitacao.Pendente = false;
-                _context.ClienteAutorizaClinicas.Add(new ClienteAutorizaClinica
+                _context.Autorizacao.Add(new Autorizacao
                 {
-                    IdCliente = cliente.Id,
-                    IdClinica = solicitacao.IdClinica,
+                    idCliente = cliente.Id,
+                    idClinica = solicitacao.idClinica,
                     Autorizado = dto.Autorizado.Value
                 });
 
@@ -172,19 +179,58 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-        [HttpGet("Pesquisar")]
-        public IActionResult GetClientesPorNome([FromQuery, Required] string nome, [FromQuery, Required] int? idClinica)
+        [HttpGet("RedefinirSenha")]
+        public async Task<IActionResult> EnviarEmailRedefinirSenha(string email, string tipo)
         {
             try
             {
-                var clientes = _context.Clientes.Where(p => p.Nome.Contains(nome) && p.IdClinica == idClinica);
-                return Ok(clientes);
+                Cliente cliente = _context.Clientes.FirstOrDefault(p => p.Email == email);
+
+                if (cliente == null)
+                {
+                    return Ok(new { Erro = true, Mensagem = "Paciente não encontrado." });
+                }
+
+                EmailRequest request = new EmailRequest();
+                request.ToEmail = cliente.Email;
+                request.Subject = "Contato Open Health";
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append("<table>");
+                    sb.Append("<tr>");
+                        sb.Append("<td>");
+                            sb.Append("<div style='text-alingment'>");
+                                sb.Append("<p>Redefinição de senha da sua conta Open Health.</p>");
+                            sb.Append("</div>");
+                        sb.Append("</td>");
+                        sb.Append("<td>");
+                            sb.Append("<div style='text-alingment'>");
+                                sb.Append("<a style='border-radius: 8px; background-color: #198754; color: white; width: 181px; height: 24px; border: 1px solid #146c43; padding-bottom: 6px; padding-top: 6px; padding-left: 12px;padding-right: 12px;' href='https://localhost:44362/RedefinirSenha?idCliente='" + cliente.Id + "&tipo=" + tipo + ">Redefinir</a>");
+                            sb.Append("</div>");
+                        sb.Append("</td>");
+                    sb.Append("</tr>");
+                sb.Append("</table>");
+                request.Body = sb.ToString();
+                await emailServico.EnviarEmailAsync(request);
+                return Ok();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest(ex);
+                throw;
             }
         }
-        
+
+        //[HttpGet("Pesquisar")]
+        //public IActionResult GetClientesPorNome([FromQuery, Required] string nome, [FromQuery, Required] int? idClinica)
+        //{
+        //    try
+        //    {
+        //        var clientes = _context.Clientes.Where(p => p.Nome.Contains(nome) && p.IdClinica == idClinica);
+        //        return Ok(clientes);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex);
+        //    }
+        //}
     }
 }

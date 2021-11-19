@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using OpenHealthAPI.DTO;
 using OpenHealthAPI.Models;
+using OpenHealthAPI.Servicos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,12 @@ namespace OpenHealthAPI.Controllers
     public class ProfissionalController : ControllerBase
     {
         private readonly OpenHealthContext _context;
+        private readonly IEmailServico emailServico;
 
-        public ProfissionalController(OpenHealthContext context)
+        public ProfissionalController(OpenHealthContext context, IEmailServico emailServico)
         {
             this._context = context;
+            this.emailServico = emailServico;
         }
 
         /// <summary>
@@ -70,6 +73,12 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
+                Profissional jaExite = _context.Profissionals.FirstOrDefault(p => p.Email == dto.Email);
+                if (jaExite != null)
+                {
+                    return BadRequest("Email já cadastrado.");
+                }
+
                 Profissional profissional;
 
                 if (dto.Id.HasValue) profissional = _context.Profissionals.Find(dto.Id.Value);
@@ -126,6 +135,46 @@ namespace OpenHealthAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex);
+            }
+        }
+
+        [HttpGet("RedefinirSenha")]
+        public async Task<IActionResult> EnviarEmailRedefinirSenha(string email, string tipo)
+        {
+            try
+            {
+                Cliente cliente = _context.Clientes.FirstOrDefault(p => p.Email == email);
+
+                if (cliente == null)
+                {
+                    return Ok(new { Erro = true, Mensagem = "Profissional não encontrado." });
+                }
+
+                EmailRequest request = new EmailRequest();
+                request.ToEmail = cliente.Email;
+                request.Subject = "Contato Open Health";
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append("<table>");
+                sb.Append("<tr>");
+                sb.Append("<td>");
+                sb.Append("<div style='text-alingment'>");
+                sb.Append("<p>Redefinição de senha da sua conta Open Health.</p>");
+                sb.Append("</div>");
+                sb.Append("</td>");
+                sb.Append("<td>");
+                sb.Append("<div style='text-alingment'>");
+                sb.Append("<a style='border-radius: 8px; background-color: #198754; color: white; width: 181px; height: 24px; border: 1px solid #146c43; padding-bottom: 6px; padding-top: 6px; padding-left: 12px;padding-right: 12px;' href='https://localhost:44362/RedefinirSenha?idCliente='" + cliente.Id + "&tipo=" + tipo + ">Redefinir</a>");
+                sb.Append("</div>");
+                sb.Append("</td>");
+                sb.Append("</tr>");
+                sb.Append("</table>");
+                request.Body = sb.ToString();
+                await emailServico.EnviarEmailAsync(request);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

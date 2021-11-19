@@ -107,7 +107,7 @@ namespace OpenHealthAPI.Controllers
             {
 
                 // verificar se a clinica é autorizada.
-               var clienteAutorizaClinica = _context.ClienteAutorizaClinicas.FirstOrDefault(p => p.IdCliente == idCliente && p.IdClinica == idClinica);
+               var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idClinica == idClinica);
                 if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new {
                     Mensagem = "Clinica não autorizada."
                 });

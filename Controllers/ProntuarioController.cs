@@ -26,7 +26,7 @@ namespace OpenHealthAPI.Controllers
                 Cliente cliente = _context.Clientes
                     .Include(p => p.Consulta)
                     .Include(p => p.Vacinas)
-                    .Include(p => p.ClinicaSolicitaAutorizacaos)
+                    .Include(p => p.Autorizacao)
                     .FirstOrDefault(p => p.Id == idCliente);
 
                 if (cliente == null)
@@ -51,12 +51,14 @@ namespace OpenHealthAPI.Controllers
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Observacao
                     }),
-                    solicitacoes = cliente.ClinicaSolicitaAutorizacaos.Select(p => new {
-                        p.Id,
+                    solicitacoes = cliente.Autorizacao.Select(p => new {
+                        p.id,
                         Titulo = "Solicitação de acesso",
                         p.Descricao,
                         p.Pendente,
-                        p.IdClinica
+                        p.idClinica,
+                        p.idCliente,
+                        p.idProfissional
                     }).Where(p => p.Pendente == true)
                 });
             }
@@ -74,6 +76,7 @@ namespace OpenHealthAPI.Controllers
                 Profissional profissional = _context.Profissionals
                     .Include(p => p.Consulta)
                     .Include(p => p.Vacinas)
+                    .Include("Autorizacao.IdClienteNavigation")
                     .FirstOrDefault(p => p.Id == idProfissional);
 
                 if (profissional == null)
@@ -98,6 +101,17 @@ namespace OpenHealthAPI.Controllers
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Observacao
                     }),
+                    prontuarios = profissional.Autorizacao.Select(p => new 
+                    {
+                        p.id,
+                        p.idCliente,
+                        p.idClinica,
+                        p.idProfissional,
+                        p.Autorizado,
+                        p.Descricao,
+                        p.Pendente,
+                        p.IdClienteNavigation.Nome
+                    }).Where(p => p.Pendente == false && p.Autorizado == true)
                 });
             }
             catch (Exception ex)
@@ -119,13 +133,15 @@ namespace OpenHealthAPI.Controllers
                     return BadRequest("Solicitação recusada por falta de informação.");
                 }
 
-                ClinicaSolicitaAutorizacao autorizacao = new ClinicaSolicitaAutorizacao();
-                autorizacao.IdCliente = cliente.Id;
-                autorizacao.IdClinica = profissional.IdClinica;
+                Autorizacao autorizacao = new Autorizacao();
+                autorizacao.idCliente = cliente.Id;
+                autorizacao.idClinica = profissional.IdClinica;
+                autorizacao.idProfissional = profissional.Id;
                 autorizacao.Pendente = true;
                 autorizacao.Descricao = $"O médico {profissional.Nome} solicita acesso ao seu prontuário.";
+                autorizacao.Autorizado = false;
 
-                _context.ClinicaSolicitaAutorizacaos.Add(autorizacao);
+                _context.Autorizacao.Add(autorizacao);
                 _context.SaveChanges();
 
                 return Ok();
@@ -141,23 +157,17 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-                ClinicaSolicitaAutorizacao autorizacao = _context.ClinicaSolicitaAutorizacaos.FirstOrDefault(p => p.Id == id);
+                Autorizacao autorizacao = _context.Autorizacao.FirstOrDefault(p => p.id == id);
 
                 if (autorizacao == null)
                 {
                     return BadRequest("Solicitação não encontrada.");
                 }
 
-                autorizacao.Pendente = false;
-
                 if (permitir)
                 {
-                    ClienteAutorizaClinica autoriza = new ClienteAutorizaClinica();
-                    autoriza.IdCliente = idCliente;
-                    autoriza.IdClinica = idClinica;
-                    autoriza.Autorizado = permitir;
-
-                    _context.ClienteAutorizaClinicas.Add(autoriza);
+                    autorizacao.Pendente = false;
+                    autorizacao.Autorizado = permitir;
                     _context.SaveChanges();
                 }
                 

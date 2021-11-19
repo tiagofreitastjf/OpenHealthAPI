@@ -11,6 +11,7 @@ namespace OpenHealthAPI.Models
         {
             Consulta = new HashSet<Consulta>();
             Vacinas = new HashSet<Vacina>();
+            Autorizacao = new HashSet<Autorizacao>();
         }
 
         public int Id { get; set; }
@@ -27,9 +28,9 @@ namespace OpenHealthAPI.Models
         public string Complemento { get; set; }
         public string Cidade { get; set; }
         public string Estado { get; set; }
-
         public virtual Clinica IdClinicaNavigation { get; set; }
         public virtual ICollection<Consulta> Consulta { get; set; }
         public virtual ICollection<Vacina> Vacinas { get; set; }
+        public virtual ICollection<Autorizacao> Autorizacao { get; set; }
     }
 }

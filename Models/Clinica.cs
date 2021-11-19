@@ -9,12 +9,10 @@ namespace OpenHealthAPI.Models
     {
         public Clinica()
         {
-            ClienteAutorizaClinicas = new HashSet<ClienteAutorizaClinica>();
-            Clientes = new HashSet<Cliente>();
-            ClinicaSolicitaAutorizacaos = new HashSet<ClinicaSolicitaAutorizacao>();
+            Autorizacao = new HashSet<Autorizacao>();
             Consulta = new HashSet<Consulta>();
             Exames = new HashSet<Exame>();
-            Profissionals = new HashSet<Profissional>();
+            Profissional = new HashSet<Profissional>();
             Vacinas = new HashSet<Vacina>();
         }
 
@@ -27,13 +25,10 @@ namespace OpenHealthAPI.Models
         public string Complemento { get; set; }
         public string Cidade { get; set; }
         public string Estado { get; set; }
-
-        public virtual ICollection<ClienteAutorizaClinica> ClienteAutorizaClinicas { get; set; }
-        public virtual ICollection<Cliente> Clientes { get; set; }
-        public virtual ICollection<ClinicaSolicitaAutorizacao> ClinicaSolicitaAutorizacaos { get; set; }
+        public virtual ICollection<Autorizacao> Autorizacao { get; set; }
         public virtual ICollection<Consulta> Consulta { get; set; }
         public virtual ICollection<Exame> Exames { get; set; }
-        public virtual ICollection<Profissional> Profissionals { get; set; }
+        public virtual ICollection<Profissional> Profissional { get; set; }
         public virtual ICollection<Vacina> Vacinas { get; set; }
     }
 }
