@@ -97,9 +97,9 @@ namespace OpenHealthAPI.Models
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Token)
-                    .IsRequired()
-                    .IsUnicode(false);
+                //entity.Property(e => e.Token)
+                //    .IsRequired()
+                //    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Autorizacao>(entity =>

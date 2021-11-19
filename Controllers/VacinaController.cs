@@ -55,7 +55,6 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// Adiciona ou atualiza uma vacina
         /// </summary>
@@ -93,7 +92,6 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// Pegar todas as vacinas do compartilhadas com a clinica
         /// </summary>
@@ -105,13 +103,11 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-
                 // verificar se a clinica é autorizada.
                var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idClinica == idClinica);
                 if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new {
                     Mensagem = "Clinica não autorizada."
                 });
-
 
                 List<Vacina> vacinas = _context.Vacinas.Where(p => p.IdCliente == idCliente).ToList();
                 var vacinasDto = new List<VacinaDto>();
@@ -137,7 +133,6 @@ namespace OpenHealthAPI.Controllers
                 return BadRequest(ex);
             }
         }
-
 
         /// <summary>
         /// Pegar todas as vacinas do cliente
@@ -174,6 +169,5 @@ namespace OpenHealthAPI.Controllers
                 return BadRequest(ex);
             }
         }
-
     }
 }

@@ -28,7 +28,6 @@ namespace OpenHealthAPI.Models
         public string Complemento { get; set; }
         public string Cidade { get; set; }
         public string Estado { get; set; }
-        public string Token { get; set; }
         public virtual ICollection<Autorizacao> Autorizacao { get; set; }
         public virtual ICollection<Consulta> Consulta { get; set; }
         public virtual ICollection<Exame> Exames { get; set; }

@@ -90,8 +90,8 @@ namespace OpenHealthAPI.Controllers
                     if (string.IsNullOrWhiteSpace(dto.Senha)) throw new Exception("Campo Senha inválido.");
                     cliente.Senha = dto.Senha;
                     // gerar token de 8 caracteres
-                    var caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                    cliente.Token = new string(Enumerable.Repeat(caracteres, 8).Select(s => s[(new Random()).Next(s.Length)]).ToArray());
+                    //var caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                    //cliente.Token = new string(Enumerable.Repeat(caracteres, 8).Select(s => s[(new Random()).Next(s.Length)]).ToArray());
                 }
 
                 cliente.Nome = dto.Nome;
@@ -145,39 +145,39 @@ namespace OpenHealthAPI.Controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [HttpPost("ResponderSolicitacao")]
-        public IActionResult PostClienteResponderSolicitacao([FromBody] ClienteResponderSolicitacaoDto dto)
-        {
-            try
-            {
-                var solicitacao = _context.Autorizacao.Find(dto.IdSolicitacao.Value);
-                if (solicitacao == null) throw new Exception("Solicitação inválida.");
-                if (solicitacao.Pendente == false) throw new Exception("Está solicitação já foi respondida.");
+        //[HttpPost("ResponderSolicitacao")]
+        //public IActionResult PostClienteResponderSolicitacao([FromBody] ClienteResponderSolicitacaoDto dto)
+        //{
+        //    try
+        //    {
+        //        var solicitacao = _context.Autorizacao.Find(dto.IdSolicitacao.Value);
+        //        if (solicitacao == null) throw new Exception("Solicitação inválida.");
+        //        if (solicitacao.Pendente == false) throw new Exception("Está solicitação já foi respondida.");
 
-                var jaTemAutorizacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == solicitacao.idCliente && p.idClinica == solicitacao.idClinica && p.Autorizado == true);
-                if (jaTemAutorizacao != null) throw new Exception("Clinica já autorizada.");
+        //        var jaTemAutorizacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == solicitacao.idCliente && p.idClinica == solicitacao.idClinica && p.Autorizado == true);
+        //        if (jaTemAutorizacao != null) throw new Exception("Clinica já autorizada.");
 
-                var cliente = _context.Clientes.FirstOrDefault(p => p.Id == solicitacao.idCliente);
-                if (cliente == null) throw new Exception("Cliente inválido.");
+        //        var cliente = _context.Clientes.FirstOrDefault(p => p.Id == solicitacao.idCliente);
+        //        if (cliente == null) throw new Exception("Cliente inválido.");
 
-                if (cliente.Token != dto.Token) throw new Exception("Token inválido.");
+        //        //if (cliente.Token != dto.Token) throw new Exception("Token inválido.");
 
-                solicitacao.Pendente = false;
-                _context.Autorizacao.Add(new Autorizacao
-                {
-                    idCliente = cliente.Id,
-                    idClinica = solicitacao.idClinica,
-                    Autorizado = dto.Autorizado.Value
-                });
+        //        solicitacao.Pendente = false;
+        //        _context.Autorizacao.Add(new Autorizacao
+        //        {
+        //            idCliente = cliente.Id,
+        //            idClinica = solicitacao.idClinica,
+        //            Autorizado = dto.Autorizado.Value
+        //        });
 
-                _context.SaveChanges();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
+        //        _context.SaveChanges();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex);
+        //    }
+        //}
 
         [HttpGet("RedefinirSenha")]
         public async Task<IActionResult> EnviarEmailRedefinirSenha(string email, string tipo)

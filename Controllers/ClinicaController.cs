@@ -101,33 +101,33 @@ namespace OpenHealthAPI.Controllers
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
-        [HttpPost("SolicitarAutorizacao")]
-        public IActionResult PostSolicitarAutorizacao([FromBody] ClinicaSolicaAutorizacaoDto dto)
-        {
-            try
-            {
-                var autorizacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == dto.IdCliente && p.idClinica == dto.IdClinica);
-                // caso já tiver sido autorizado em algum momento
-                if (autorizacao != null && autorizacao.Autorizado == true) return Ok();
+        //[HttpPost("SolicitarAutorizacao")]
+        //public IActionResult PostSolicitarAutorizacao([FromBody] ClinicaSolicaAutorizacaoDto dto)
+        //{
+        //    try
+        //    {
+        //        var autorizacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == dto.IdCliente && p.idClinica == dto.IdClinica);
+        //        // caso já tiver sido autorizado em algum momento
+        //        if (autorizacao != null && autorizacao.Autorizado == true) return Ok();
 
-                var solicitacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == dto.IdCliente && p.idClinica == dto.IdClinica && p.Pendente == true);
-                if (solicitacao != null) throw new Exception("Já existe um pedido de autorização pendente.");
+        //        var solicitacao = _context.Autorizacao.FirstOrDefault(p => p.idCliente == dto.IdCliente && p.idClinica == dto.IdClinica && p.Pendente == true);
+        //        if (solicitacao != null) throw new Exception("Já existe um pedido de autorização pendente.");
 
-                solicitacao = new Autorizacao();
-                solicitacao.idCliente = dto.IdCliente.Value;
-                solicitacao.idClinica = dto.IdClinica.Value;
-                solicitacao.Descricao = dto.Descricao;
-                solicitacao.Pendente = true;
+        //        solicitacao = new Autorizacao();
+        //        solicitacao.idCliente = dto.IdCliente.Value;
+        //        solicitacao.idClinica = dto.IdClinica.Value;
+        //        solicitacao.Descricao = dto.Descricao;
+        //        solicitacao.Pendente = true;
 
-                _context.Autorizacao.Add(solicitacao);
-                _context.SaveChanges();
+        //        _context.Autorizacao.Add(solicitacao);
+        //        _context.SaveChanges();
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex);
+        //    }
+        //}
     }
 }

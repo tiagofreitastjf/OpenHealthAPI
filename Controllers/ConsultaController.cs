@@ -55,7 +55,6 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// Adiciona ou atualiza uma consulta
         /// </summary>
@@ -93,7 +92,6 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-
         /// <summary>
         /// Pegar todas as consultas do compartilhadas com a clinica
         /// </summary>
@@ -105,7 +103,6 @@ namespace OpenHealthAPI.Controllers
         {
             try
             {
-
                 // verificar se a clinica é autorizada.
                var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idClinica == idClinica);
                 if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new {
@@ -137,7 +134,6 @@ namespace OpenHealthAPI.Controllers
                 return BadRequest(ex);
             }
         }
-
 
         /// <summary>
         /// Pegar todas consultas do cliente
@@ -174,6 +170,5 @@ namespace OpenHealthAPI.Controllers
                 return BadRequest(ex);
             }
         }
-
     }
 }
