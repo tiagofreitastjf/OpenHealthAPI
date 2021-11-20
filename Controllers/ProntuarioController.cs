@@ -91,16 +91,18 @@ namespace OpenHealthAPI.Controllers
                     dataNascimento = profissional.DataNascimento.ToString("dd/MM/yyyy"),
                     consulta = profissional.Consulta.Select(p => new {
                         p.Id,
+                        p.IdCliente,
                         p.TipoConsulta,
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Descricao
-                    }),
+                    }).Take(3),
                     vacina = profissional.Vacinas.Select(p => new {
                         p.Id,
+                        p.IdCliente,
                         p.TipoVacina,
                         data = p.Data.ToString("dd/MM/yyyy"),
                         p.Observacao
-                    }),
+                    }).Take(3),
                     prontuarios = profissional.Autorizacao.Select(p => new 
                     {
                         p.id,

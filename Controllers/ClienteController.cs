@@ -204,13 +204,35 @@ namespace OpenHealthAPI.Controllers
                         sb.Append("</td>");
                         sb.Append("<td>");
                             sb.Append("<div style='text-alingment'>");
-                                sb.Append("<a style='border-radius: 8px; background-color: #198754; color: white; width: 181px; height: 24px; border: 1px solid #146c43; padding-bottom: 6px; padding-top: 6px; padding-left: 12px;padding-right: 12px;' href='https://localhost:44362/RedefinirSenha?idCliente='" + cliente.Id + "&tipo=" + tipo + ">Redefinir</a>");
+                                sb.Append("<a style='border-radius: 8px; background-color: #198754; color: white; width: 181px; height: 24px; border: 1px solid #146c43; padding-bottom: 6px; padding-top: 6px; padding-left: 12px;padding-right: 12px;' href='https://localhost:44362/RedefinirSenha?id='" + cliente.Id + "&tipo=" + tipo + ">Redefinir</a>");
                             sb.Append("</div>");
                         sb.Append("</td>");
                     sb.Append("</tr>");
                 sb.Append("</table>");
                 request.Body = sb.ToString();
                 await emailServico.EnviarEmailAsync(request);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        
+        [HttpGet("AtualizarSenha")]
+        public async Task<IActionResult> AtualizarSenha(int id, string novaSenha)
+        {
+            try
+            {
+                Cliente cliente = _context.Clientes.FirstOrDefault(p => p.Id == id);
+
+                if (cliente == null)
+                {
+                    return Ok(new { Erro = true, Mensagem = "Paciente não encontrado." });
+                }
+
+                cliente.Senha = novaSenha;
+                _context.SaveChanges();
                 return Ok();
             }
             catch (Exception)

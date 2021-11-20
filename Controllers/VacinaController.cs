@@ -99,25 +99,26 @@ namespace OpenHealthAPI.Controllers
         /// <param name="idClinica"></param>
         /// <returns></returns>
         [HttpGet("Clinica")]
-        public IActionResult GetTodos([FromQuery, Required] int? idCliente, [FromQuery, Required] int? idClinica)
+        public IActionResult GetTodos([FromQuery, Required] int? idCliente, [FromQuery, Required] int? idProfissional)
         {
             try
             {
                 // verificar se a clinica é autorizada.
-               var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idClinica == idClinica);
+               var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idProfissional == idProfissional);
                 if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new {
+                    Erro = true,
                     Mensagem = "Clinica não autorizada."
                 });
 
                 List<Vacina> vacinas = _context.Vacinas.Where(p => p.IdCliente == idCliente).ToList();
-                var vacinasDto = new List<VacinaDto>();
+                var vacinasDto = new List<dynamic>();
 
                 foreach (var vacina in vacinas)
                 {
-                    vacinasDto.Add(new VacinaDto
+                    vacinasDto.Add(new
                     {
                         Id = vacina.Id,
-                        Data = vacina.Data,
+                        Data = vacina.Data.ToString("dd/MM/yyyy"),
                         IdCliente = vacina.IdCliente,
                         IdClinica = vacina.IdClinica,
                         IdProfissional = vacina.IdProfissional,
