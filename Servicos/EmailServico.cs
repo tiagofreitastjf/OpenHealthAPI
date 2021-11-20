@@ -42,7 +42,7 @@ namespace OpenHealthAPI.Servicos
                 }
             }
 
-            mensagem.IsBodyHtml = false;
+            mensagem.IsBodyHtml = true;
             mensagem.Body = mailRequest.Body;
             smtpCliente.Port = _mailSettings.Port;
             smtpCliente.Host = _mailSettings.Host;
