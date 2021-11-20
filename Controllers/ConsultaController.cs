@@ -99,26 +99,27 @@ namespace OpenHealthAPI.Controllers
         /// <param name="idClinica"></param>
         /// <returns></returns>
         [HttpGet("Clinica")]
-        public IActionResult GetTodos([FromQuery, Required] int? idCliente, [FromQuery, Required] int? idClinica)
+        public IActionResult GetTodos([FromQuery, Required] int? idCliente, [FromQuery, Required] int? idProfissional)
         {
             try
             {
                 // verificar se a clinica é autorizada.
-               var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idClinica == idClinica);
-                if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new {
-                    Mensagem = "Clinica não autorizada."
+               var clienteAutorizaClinica = _context.Autorizacao.FirstOrDefault(p => p.idCliente == idCliente && p.idProfissional == idProfissional);
+                if (clienteAutorizaClinica == null || clienteAutorizaClinica.Autorizado == false) return Ok(new { 
+                    Erro = true,
+                    Mensagem = "Profissional não autorizado."
                 });
 
 
                 List<Consulta> consultas = _context.Consulta.Where(p => p.IdCliente == idCliente).ToList();
-                var consultasDto = new List<ConsultaDto>();
+                var consultasDto = new List<dynamic>();
 
                 foreach (var consulta in consultas)
                 {
-                    consultasDto.Add(new ConsultaDto
+                    consultasDto.Add(new
                     {
                         Id = consulta.Id,
-                        Data = consulta.Data,
+                        Data = consulta.Data.ToString("dd/MM/yyyy"),
                         IdCliente = consulta.IdCliente,
                         IdClinica = consulta.IdClinica,
                         IdProfissional = consulta.IdProfissional,
