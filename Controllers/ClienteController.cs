@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace OpenHealthAPI.Controllers
@@ -204,7 +205,7 @@ namespace OpenHealthAPI.Controllers
                         sb.Append("</td>");
                         sb.Append("<td>");
                             sb.Append("<div style='text-alingment'>");
-                                sb.Append("<a style='border-radius: 8px; background-color: #198754; color: white; width: 181px; height: 24px; border: 1px solid #146c43; padding-bottom: 6px; padding-top: 6px; padding-left: 12px;padding-right: 12px;' href='https://localhost:44362/RedefinirSenha?id='" + cliente.Id + "&tipo=" + tipo + ">Redefinir</a>");
+                                sb.Append("<a style='border-radius: 8px; background-color: #198754; color: white; width: 181px; height: 24px; border: 1px solid #146c43; padding-bottom: 6px; padding-top: 6px; padding-left: 12px;padding-right: 12px;' href='https://localhost:44362/RedefinirSenha?id=" + cliente.Id + "&tipo=" + tipo + "'>Redefinir</a>");
                             sb.Append("</div>");
                         sb.Append("</td>");
                     sb.Append("</tr>");
