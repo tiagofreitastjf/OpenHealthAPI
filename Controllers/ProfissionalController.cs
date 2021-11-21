@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OpenHealthAPI.DTO;
 using OpenHealthAPI.Models;
 using OpenHealthAPI.Servicos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -197,6 +199,53 @@ namespace OpenHealthAPI.Controllers
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        [HttpGet("GetAgendamentos")]
+        public IActionResult GetAgendamentos([FromQuery, Required] int idProfissional)
+        {
+            try
+            {
+                var agendamentos = _context.Agenda
+                    .Include(p => p.IdClinicaNavigation)
+                    .Include(p => p.IdClienteNavigation)
+                    .Where(p => p.idProfissional == idProfissional);
+
+                return Ok(agendamentos.Select(p => new
+                {
+                    p.id,
+                    p.idCliente,
+                    p.idClinica,
+                    p.idProfissional,
+                    Status = p.Confirmado == true ? "Confirmado" : "Não confirmado",
+                    p.Confirmado,
+                    Data = p.Data.ToString("dd/MM/yyyy HH:mm"),
+                    Paciente = p.IdClienteNavigation.Nome,
+                    Local = $"Endereço: {p.IdClinicaNavigation.Endereco}, Número: {p.IdClinicaNavigation.Numero}, Bairro: {p.IdClinicaNavigation.Bairro}, Complemento: {p.IdClinicaNavigation.Complemento}"
+                }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpGet("AgendarDesmarcar")]
+        public IActionResult AgendarDesmarcar(int id, bool confirmar)
+        {
+            try
+            {
+                Agenda novo = _context.Agenda.FirstOrDefault(p => p.id == id);
+                novo.Confirmado = confirmar;
+                novo.Pendente = false;
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
             }
         }
     }

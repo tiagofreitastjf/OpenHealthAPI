@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OpenHealthAPI.DTO;
 using OpenHealthAPI.Models;
 using OpenHealthAPI.Servicos;
@@ -242,18 +243,75 @@ namespace OpenHealthAPI.Controllers
             }
         }
 
-        //[HttpGet("Pesquisar")]
-        //public IActionResult GetClientesPorNome([FromQuery, Required] string nome, [FromQuery, Required] int? idClinica)
-        //{
-        //    try
-        //    {
-        //        var clientes = _context.Clientes.Where(p => p.Nome.Contains(nome) && p.IdClinica == idClinica);
-        //        return Ok(clientes);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex);
-        //    }
-        //}
+        [HttpGet("GetAgendamentos")]
+        public IActionResult GetAgendamentos([FromQuery, Required] int idCliente)
+        {
+            try
+            {
+                var agendamentos = _context.Agenda
+                    .Include(p => p.IdProfissionalNavigation)
+                    .Include(p => p.IdClinicaNavigation)
+                    .Where(p => p.idCliente == idCliente);
+                
+                return Ok(agendamentos.Select(p => new 
+                {
+                    p.id,
+                    p.idCliente,
+                    p.idClinica,
+                    p.idProfissional,
+                    Status = p.Confirmado == true ? "Confirmado" : "Não confirmado",
+                    p.Confirmado,
+                    Data = p.Data.ToString("dd/MM/yyyy HH:mm"),
+                    Medico = p.IdProfissionalNavigation.Nome,
+                    Local = $"Endereço: {p.IdClinicaNavigation.Endereco}, Número: {p.IdClinicaNavigation.Numero}, Bairro: {p.IdClinicaNavigation.Bairro}, Complemento: {p.IdClinicaNavigation.Complemento}",
+                    p.Pendente
+                }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+        
+        [HttpPost("Agendar")]
+        public IActionResult Agendar(Agenda agenda)
+        {
+            try
+            {
+                Agenda novo = new Agenda();
+                novo.idCliente = agenda.idCliente;
+                novo.idClinica = agenda.idClinica;
+                novo.idProfissional = agenda.idProfissional;
+                novo.Data = DateTime.Parse(agenda.Data.ToString("dd/MM/yyyy") + " " + agenda.Hora.ToString());
+                novo.Confirmado = false;
+                novo.Pendente = true;
+
+                _context.Agenda.Add(novo);
+                _context.SaveChanges();
+                
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpGet("Desmarcar")]
+        public IActionResult Desmarcar(int id)
+        {
+            try
+            {
+                Agenda agenda = _context.Agenda.FirstOrDefault(p => p.id == id);
+                _context.Agenda.Remove(agenda);
+                _context.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

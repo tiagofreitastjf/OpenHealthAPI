@@ -14,6 +14,7 @@ namespace OpenHealthAPI.Models
             Exames = new HashSet<Exame>();
             Profissional = new HashSet<Profissional>();
             Vacinas = new HashSet<Vacina>();
+            Agenda = new HashSet<Agenda>();
         }
 
         public int Id { get; set; }
@@ -30,5 +31,6 @@ namespace OpenHealthAPI.Models
         public virtual ICollection<Exame> Exames { get; set; }
         public virtual ICollection<Profissional> Profissional { get; set; }
         public virtual ICollection<Vacina> Vacinas { get; set; }
+        public virtual ICollection<Agenda> Agenda { get; set; }
     }
 }

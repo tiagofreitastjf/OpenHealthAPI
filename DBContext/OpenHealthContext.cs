@@ -24,6 +24,7 @@ namespace OpenHealthAPI.Models
         public virtual DbSet<Exame> Exames { get; set; }
         public virtual DbSet<Profissional> Profissionals { get; set; }
         public virtual DbSet<Vacina> Vacinas { get; set; }
+        public virtual DbSet<Agenda> Agenda { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -356,6 +357,35 @@ namespace OpenHealthAPI.Models
                     .WithMany(p => p.Vacinas)
                     .HasForeignKey(d => d.IdProfissional)
                     .HasConstraintName("FK_Vacina_Profissional");
+            });
+            
+            modelBuilder.Entity<Agenda>(entity =>
+            {
+                entity.ToTable("Agenda");
+
+                entity.Property(e => e.id).HasColumnName("id");
+
+                entity.Property(e => e.Data).HasColumnType("datetime");
+
+                entity.Property(e => e.idCliente).HasColumnName("idCliente");
+
+                entity.Property(e => e.idClinica).HasColumnName("idClinica");
+
+                entity.Property(e => e.idProfissional).HasColumnName("idProfissional");
+
+                entity.HasOne(d => d.IdClienteNavigation)
+                    .WithMany(p => p.Agenda)
+                    .HasForeignKey(d => d.idCliente)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.IdClinicaNavigation)
+                    .WithMany(p => p.Agenda)
+                    .HasForeignKey(d => d.idClinica)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.IdProfissionalNavigation)
+                    .WithMany(p => p.Agenda)
+                    .HasForeignKey(d => d.idProfissional);
             });
 
             OnModelCreatingPartial(modelBuilder);

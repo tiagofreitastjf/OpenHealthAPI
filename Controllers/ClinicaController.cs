@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OpenHealthAPI.DTO;
 using OpenHealthAPI.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -129,5 +131,31 @@ namespace OpenHealthAPI.Controllers
         //        return BadRequest(ex);
         //    }
         //}
+
+        [HttpGet("GetClinicasProximas")]
+        public IActionResult GetClinicasProximas([FromQuery, Required] int idCliente)
+        {
+            try
+            {
+                var cliente = _context.Clientes.FirstOrDefault(p => p.Id == idCliente);
+
+                var clinicas = _context.Clinicas.Include(p => p.Profissional).Where(p => p.Cidade == cliente.Cidade);
+
+                return Ok(clinicas.Select(p => new
+                {
+                    p.Id,
+                    p.Nome,
+                    Profissionais = p.Profissional.Select(q => new 
+                    {
+                        q.Id,
+                        q.Nome
+                    })
+                }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }
